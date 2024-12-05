@@ -20,9 +20,9 @@
 
 import argparse
 import os
-from others.logging import init_logger
-from train_abstractive import validate_abs, train_abs, baseline, test_abs # Removed 'test_text_abs' from the original code.
-from train_extractive import train_ext, validate_ext, test_ext
+from .others.logging import init_logger
+from .train_abstractive import validate_abs, train_abs, baseline, test_abs # Removed 'test_text_abs' from the original code.
+from .train_extractive import train_ext, validate_ext, test_ext
 
 
 def str2bool(v):
