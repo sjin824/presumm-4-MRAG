@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+
+# -*- coding: utf-8 -*-
+# @Time: 03/12/2024 21:54pm NZDT (UTC+13)
+# @Author (not origin): Siyu Jin
+# @File: train_exstractive_v2
+# @Annotation:  
+#   Is the modified version of 'PreSumm/src/train_exstractive.py'.
+
+
 """
     Main training workflow
 """
@@ -173,7 +182,7 @@ def validate(args, device_id, pt, step):
     return stats.xent()
 
 
-def test_ext(args, device_id, pt, step):
+def test_ext(args, text, target, device_id, pt, step): # 新加了text参数，进行传text
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
     if (pt != ''):
         test_from = pt
@@ -189,12 +198,16 @@ def test_ext(args, device_id, pt, step):
 
     model = ExtSummarizer(args, device, checkpoint)
     model.eval()
+    # Siyu modified the data_loader.Dataloader() function call
+    # # Original code:
+    # test_iter = data_loader.Dataloader(args, load_dataset(args, 'test', shuffle=False),
+    #                                    args.test_batch_size, device,
+    #                                    shuffle=False, is_test=True)
+    test_iter = data_loader.load_text(args, device, text, target)#东西会传哪去呢？要不要考虑像zhenyun一样加【target路径】参数
+    
 
-    test_iter = data_loader.Dataloader(args, load_dataset(args, 'test', shuffle=False),
-                                       args.test_batch_size, device,
-                                       shuffle=False, is_test=True)
     trainer = build_trainer(args, device_id, model, None)
-    trainer.test(test_iter, step)
+    return trainer.test(test_iter, step) # zhenyun在这里加的return
 
 def train_ext(args, device_id):
     if (args.world_size > 1):

@@ -1,3 +1,15 @@
+# -*- coding: utf-8 -*-
+# @Time: 04/12/2024 12:06pm NZDT (UTC+13)
+# @Author (not origin): Siyu Jin
+# @File: presumm_data_loader_v2.py
+# @Annotation:  
+
+# Required packages:
+# nltk
+# numpy
+# simcse
+# torch
+
 import bisect
 import gc
 import glob
@@ -5,7 +17,7 @@ import random
 
 import torch
 
-from presumm.others.logging import logger
+from others.logging import logger
 
 
 
@@ -77,7 +89,7 @@ def load_dataset(args, corpus_type, shuffle):
     def _lazy_dataset_loader(pt_file, corpus_type):
         dataset = torch.load(pt_file)
         logger.info('Loading %s dataset from %s, number of examples: %d' %
-                    (corpus_type, pt_file, len(dataset)))
+            (corpus_type, pt_file, len(dataset)))
         return dataset
 
     # Sort the glob output by file name (by increasing indexes).
@@ -377,3 +389,125 @@ class TextDataloader(object):
 
                 yield batch
             return
+        
+# Based on Zhenyun's
+def load_text(args, device, text, target):
+    from others.tokenization import BertTokenizer 
+    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+    sep_vid = tokenizer.vocab['[SEP]']
+    cls_vid = tokenizer.vocab['[CLS]']
+    n_lines = len(text.split('\n'))
+
+    def _process_src(raw):
+        raw = raw.strip().lower()
+        raw = raw.replace('[cls]', '[CLS]').replace('[sep]', '[SEP]')
+        src_subtokens = tokenizer.tokenize(raw)
+        src_subtokens = ['[CLS]'] + src_subtokens + ['[SEP]']
+        src_subtoken_idxs = tokenizer.convert_tokens_to_ids(src_subtokens)
+        src_subtoken_idxs = src_subtoken_idxs[:-1][:args.max_pos]     # ori
+        src_subtoken_idxs[-1] = sep_vid
+        _segs = [-1] + [i for i, t in enumerate(src_subtoken_idxs) if t == sep_vid]
+        segs = [_segs[i] - _segs[i - 1] for i in range(1, len(_segs))]
+        segments_ids = []
+        segs = segs[:args.max_pos]                                    # ori
+        for i, s in enumerate(segs):
+            if (i % 2 == 0):
+                segments_ids += s * [0]
+            else:
+                segments_ids += s * [1]
+
+        src = torch.tensor(src_subtoken_idxs)[None, :].to(device)
+        mask_src = (1 - (src == 0).float()).to(device)
+        cls_ids = [[i for i, t in enumerate(src_subtoken_idxs) if t == cls_vid]]
+        clss = torch.tensor(cls_ids).to(device)
+        mask_cls = 1 - (clss == -1).float()
+        clss[clss == -1] = 0
+        
+        return src, mask_src, segments_ids, clss, mask_cls
+    
+    def select_candidate_sentences(fulltext):
+        """
+            a): if len(sentences) < 10; select all sentences as candidate sentences;
+            b): if len(sentences) < 100; select top-10 sentences as candidate sentences;
+            c): if len(sentences) > 100; select 1/10 of sentences as candidate sentences;
+        """
+        from nltk.tokenize import sent_tokenize
+        sentences = sent_tokenize(fulltext)
+        from simcse import SimCSE
+        model = SimCSE("princeton-nlp/sup-simcse-roberta-large")
+        sent_sim_scores_by_simcse = model.similarity(sentences, [fulltext])
+        import numpy as np
+        sent_ids_select_by_simcse = np.argsort(-sent_sim_scores_by_simcse.reshape(1, -1)).tolist()[0]
+
+        if len(sentences) <= 10:
+            cand_sent_ids = sent_ids_select_by_simcse
+            cand_sents = [sentences[ids] for ids in cand_sent_ids]
+            # cand_sent_ids = sorted(sent_ids_select_by_simcse)
+            # cand_sents = [sent for idx, sent in enumerate(sentences) if idx in cand_sent_ids]
+        elif len(sentences) <= 100:
+            cand_length = 10
+            cand_sent_ids = sent_ids_select_by_simcse[:cand_length]
+            cand_sents = [sentences[ids] for ids in cand_sent_ids]
+        else:
+            cand_length = int(len(sentences) / 10)
+            cand_sent_ids = sent_ids_select_by_simcse[:cand_length]
+            cand_sents = [sentences[ids] for ids in cand_sent_ids]
+
+        return cand_sent_ids, cand_sents
+    
+    # 此函数的主逻辑开始
+    cand_sent_ids, sents = select_candidate_sentences(text)
+    
+    if not target: # 没有对应target训练，是常用情况
+        sents_with_cls_sep = []
+        for i in range(len(sents)):
+            if i != 0:
+                sents_with_cls_sep.append("[CLS] [SEP] " + sents[i])
+            else:
+                sents_with_cls_sep.append(sents[i])
+        x = ' '.join(sents_with_cls_sep)
+        src, mask_src, segments_ids, clss, mask_cls = _process_src(x)
+        segs = torch.tensor(segments_ids)[None, :].to(device)
+        batch = Batch()
+        batch.src = src
+        batch.tgt = None
+        batch.mask_src = mask_src
+        batch.mask_tgt = None
+        batch.segs = segs
+        batch.src_str = [[sent.replace('[SEP]', '').strip() for sent in x.split('[CLS]')]]
+        batch.tgt_str = ['']
+        batch.clss = clss
+        batch.mask_cls = mask_cls
+        batch.cand_sent_ids = cand_sent_ids     # dzy
+
+        batch.batch_size = 1
+        yield batch
+        
+    # 不常用情况，我也不知道是什么用途
+    else:
+        # 如果输入是大段文本，将其按行分割为小单元处理（模拟流式处理）。
+        text_lines = text.strip()
+        target_lines = target.strip()
+        target_lines = ' '.join(target_lines.split())
+        # 确保 text 和 target 的长度匹配
+        assert len(text_lines) == len(target_lines), "Text and Target must have the same number of lines."
+            
+        # 处理源文本
+        src, mask_src, segments_ids, clss, mask_cls = _process_src(x)
+        segs = torch.tensor(segments_ids)[None, :].to(device)
+
+        # 构造 Batch
+        batch = Batch()
+        batch.src = src
+        batch.tgt = None
+        batch.mask_src = mask_src
+        batch.mask_tgt = None
+        batch.segs = segs
+        batch.src_str = [[sent.replace('[SEP]', '').strip() for sent in x.split('[CLS]')]]
+        batch.tgt_str = [target_lines]
+        batch.clss = clss
+        batch.mask_cls = mask_cls
+        batch.batch_size = 1
+        
+        # 使用 yield 输出流式处理的批量数据
+        yield batch

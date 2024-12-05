@@ -1,4 +1,13 @@
 #!/usr/bin/env python
+
+# -*- coding: utf-8 -*-
+# @Time: 03/12/2024 21:56pm NZDT (UTC+13)
+# @Author (not origin): Siyu Jin
+# @File: train_abstractive_v2
+# @Annotation:  
+#   Is the modified version of 'PreSumm/src/train_abstractive.py'.
+
+
 """
     Main training workflow
 """
@@ -197,7 +206,7 @@ def validate(args, device_id, pt, step):
     return stats.xent()
 
 
-def test_abs(args, device_id, pt, step):
+def test_abs(args, text, target, device_id, pt, step): # 新加了text参数，进行传text
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
     if (pt != ''):
         test_from = pt
@@ -214,44 +223,19 @@ def test_abs(args, device_id, pt, step):
 
     model = AbsSummarizer(args, device, checkpoint)
     model.eval()
-
-    test_iter = data_loader.Dataloader(args, load_dataset(args, 'test', shuffle=False),
-                                       args.test_batch_size, device,
-                                       shuffle=False, is_test=True)
+    # Siyu modified the data_loader.Dataloader() function call
+    # # Original code:
+    # test_iter = data_loader.Dataloader(args, load_dataset(args, 'test', shuffle=False),
+    #                                    args.test_batch_size, device,
+    #                                    shuffle=False, is_test=True)
+    test_iter = data_loader.load_text(args, device, text, target)#东西会传哪去呢？要不要考虑像zhenyun一样加【target路径】参数
     tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True, cache_dir=args.temp_dir)
     symbols = {'BOS': tokenizer.vocab['[unused0]'], 'EOS': tokenizer.vocab['[unused1]'],
                'PAD': tokenizer.vocab['[PAD]'], 'EOQ': tokenizer.vocab['[unused2]']}
     predictor = build_predictor(args, tokenizer, symbols, model, logger)
     predictor.translate(test_iter, step)
 
-
-def test_text_abs(args, device_id, pt, step):
-    device = "cpu" if args.visible_gpus == '-1' else "cuda"
-    if (pt != ''):
-        test_from = pt
-    else:
-        test_from = args.test_from
-    logger.info('Loading checkpoint from %s' % test_from)
-
-    checkpoint = torch.load(test_from, map_location=lambda storage, loc: storage)
-    opt = vars(checkpoint['opt'])
-    for k in opt.keys():
-        if (k in model_flags):
-            setattr(args, k, opt[k])
-    print(args)
-
-    model = AbsSummarizer(args, device, checkpoint)
-    model.eval()
-
-    test_iter = data_loader.Dataloader(args, load_dataset(args, 'test', shuffle=False),
-                                       args.test_batch_size, device,
-                                       shuffle=False, is_test=True)
-    tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True, cache_dir=args.temp_dir)
-    symbols = {'BOS': tokenizer.vocab['[unused0]'], 'EOS': tokenizer.vocab['[unused1]'],
-               'PAD': tokenizer.vocab['[PAD]'], 'EOQ': tokenizer.vocab['[unused2]']}
-    predictor = build_predictor(args, tokenizer, symbols, model, logger)
-    predictor.translate(test_iter, step)
-
+# Siyu removed the function: test_text_abs() of original.
 
 def baseline(args, cal_lead=False, cal_oracle=False):
     test_iter = data_loader.Dataloader(args, load_dataset(args, 'test', shuffle=False),
