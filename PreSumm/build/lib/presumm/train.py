@@ -181,4 +181,4 @@ def ranking_request(configs=False, sample=None, target=None):
         # We could just invoke'test_ext()' here.
         elif (args.mode == 'test_text'): 
             # 保留了和zhenyun一样的return
-            return test_ext(args=args, text=sample, target=target, device_id=device_id, pt='', step=-1) 
+            return test_ext(args=args, text=sample, target=target, device_id=device_id, step=-1) 

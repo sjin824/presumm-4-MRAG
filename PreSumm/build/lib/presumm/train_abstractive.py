@@ -19,9 +19,14 @@ import os
 import random
 import signal
 import time
+import sys
 
 import torch
 from pytorch_transformers import BertTokenizer
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+models_path = os.path.join(current_dir, "models")
+sys.path.append(models_path)
 
 from . import distributed
 from .models import data_loader, model_builder

@@ -19,6 +19,8 @@ import os
 import random
 import signal
 import time
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(__file__))) # This is important to make sure torch.load() can find the module: 'models'.
 
 import torch
 from pytorch_transformers import BertTokenizer
