@@ -19,10 +19,17 @@ import os
 import random
 import signal
 import time
+import sys
 
 import torch
 
+
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+
+import presumm.models
 from . import distributed
+from . import models
 from .models import data_loader, model_builder
 from .models.data_loader import load_dataset
 from .models.model_builder import ExtSummarizer
@@ -182,12 +189,9 @@ def validate(args, device_id, pt, step):
     return stats.xent()
 
 
-def test_ext(args, text, target, device_id, pt, step): # 新加了text参数，进行传text
+def test_ext(args, text, target, device_id, step): # 新加了text参数，进行传text
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
-    if (pt != ''):
-        test_from = pt
-    else:
-        test_from = args.test_from
+    test_from = args.test_from
     logger.info('Loading checkpoint from %s' % test_from)
     checkpoint = torch.load(test_from, map_location=lambda storage, loc: storage)
     opt = vars(checkpoint['opt'])
