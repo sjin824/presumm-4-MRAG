@@ -1,6 +1,0 @@
-multiprocess
-numpy
-pyrouge
-pytorch-transformers
-tensorboardX
-torch

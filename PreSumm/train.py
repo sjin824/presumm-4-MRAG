@@ -33,7 +33,7 @@ def str2bool(v):
     else:
         raise argparse.ArgumentTypeError('Boolean value expected.')
 
-def ranking_request(configs=False, sample=None, target=None):
+def main(configs=False, sample=None, target=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("-task", default='ext', type=str, choices=['ext', 'abs'])
     parser.add_argument("-encoder", default='bert', type=str, choices=['bert', 'baseline'])
@@ -182,3 +182,6 @@ def ranking_request(configs=False, sample=None, target=None):
         elif (args.mode == 'test_text'): 
             # 保留了和zhenyun一样的return
             return test_ext(args=args, text=sample, target=target, device_id=device_id, step=-1) 
+        
+if __name__ == '__main__':
+    main()
