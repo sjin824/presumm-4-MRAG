@@ -9,8 +9,8 @@ import torch
 
 from tensorboardX import SummaryWriter
 
-from presumm.others.utils import rouge_results_to_str, test_rouge, tile
-from presumm.translate.beam import GNMTGlobalScorer
+from PreSumm.others.utils import rouge_results_to_str, test_rouge, tile
+from PreSumm.translate.beam import GNMTGlobalScorer
 
 
 def build_predictor(args, tokenizer, symbols, model, logger=None):

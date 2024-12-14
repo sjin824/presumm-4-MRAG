@@ -6,8 +6,8 @@ import time
 import math
 import sys
 
-from presumm.distributed import all_gather_list
-from presumm.others.logging import logger
+from PreSumm.distributed import all_gather_list
+from PreSumm.others.logging import logger
 
 
 def build_report_manager(opt):

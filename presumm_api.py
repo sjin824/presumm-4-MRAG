@@ -2,13 +2,12 @@ from flask import Flask, request, jsonify
 from nltk.tokenize import sent_tokenize
 
 # 可能有问题
-from presumm import PreSumm
-from presumm import train
+from PreSumm import train
 
 app = Flask(__name__)
 
-def sentence_ranking_by_presumm(configs, fulltext):
-    return train.main(configs, fulltext)
+def sentence_ranking_by_presumm(configs, sample):
+    return train.main(configs, sample)
 
 @app.route('/presumm', methods=['POST'])
 def api_produce_sentences():
@@ -19,24 +18,23 @@ def api_produce_sentences():
     configs = {
         'task': 'ext',
         'mode': 'test_text',
-        'test_from': 'bertext_cnndm_transformer.pt',
-        'result_path': 'logs/ext',
+        'test_from': 'checkpoints/bertext_cnndm_transformer.pt',
+        'result_path': 'logs/',
         'alpha': 0.95,
-        'log_file': 'logs/ext/log.txt',
+        'log_file': 'logs/log.txt',
         'visible_gpus': '0'
     }
     try:
         # Parse input JSON
-        data = request.get_json()
-        fulltext = data.get("fulltext", "")
-        if not fulltext:
+        sample = request.get_json()
+        if not sample:
             return jsonify({"error": "No input text provided."}), 400
         
-        # zhenyun的不知道哪来的逻辑。考虑是否需要
-        if fulltext[0] in ["“", "'", "”"] and fulltext[-1] in ["“", "'", "”"]:
-            fulltext = fulltext[1:-1]
+        # # zhenyun的不知道哪来的逻辑。考虑是否需要
+        # if fulltext[0] in ["“", "'", "”"] and fulltext[-1] in ["“", "'", "”"]:
+        #     fulltext = fulltext[1:-1]
 
-        sent_with_score = sentence_ranking_by_presumm(configs, fulltext)
+        sent_with_score = sentence_ranking_by_presumm(configs, sample)
 
         #[idx]有没有真实用处还未确定 注意这个 fulltext['sents_id_selected_by_bertsum'] = sent_with_score[idx][2]
         ids_by_presumm = sent_with_score[2]
@@ -44,8 +42,8 @@ def api_produce_sentences():
         sentences_with_scores_by_presumm = sent_with_score[1].tolist()
         sentence_order_by_presumm = sent_with_score[4]
         sentence_texts_order_by_presumm = sent_with_score[5]
-        # 不知道zhenyun问什么又要做一遍tokenization。考虑是否需要
-        sentences = sent_tokenize(fulltext)
+        # # 不知道zhenyun问什么又要做一遍tokenization。考虑是否需要
+        # sentences = sent_tokenize(fulltext)
 
         # Prepare JSON response
         response = {
@@ -54,7 +52,7 @@ def api_produce_sentences():
             "sentences_with_scores_by_presumm": sentences_with_scores_by_presumm,
             "sentence_order_by_presumm": sentence_order_by_presumm,
             "sentence_texts_order_by_presumm": sentence_texts_order_by_presumm,
-            "sentences": sentences
+            # "sentences": sentences
         }
 
         return jsonify(response)

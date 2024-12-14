@@ -184,7 +184,7 @@ def validate(args, device_id, pt, step):
     return stats.xent()
 
 
-def test_ext(args, text, target, device_id, step): # 新加了text参数，进行传text
+def test_ext(args, cand_sent_ids, cand_sents, target, device_id, step): # 新加了text参数，进行传text
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
     test_from = args.test_from
     logger.info('Loading checkpoint from %s' % test_from)
@@ -202,7 +202,7 @@ def test_ext(args, text, target, device_id, step): # 新加了text参数，进�
     # test_iter = data_loader.Dataloader(args, load_dataset(args, 'test', shuffle=False),
     #                                    args.test_batch_size, device,
     #                                    shuffle=False, is_test=True)
-    test_iter = data_loader.load_text(args, device, text, target)#东西会传哪去呢？要不要考虑像zhenyun一样加【target路径】参数
+    test_iter = data_loader.load_text(args, device, cand_sent_ids, cand_sents, target)#东西会传哪去呢？要不要考虑像zhenyun一样加【target路径】参数
     
 
     trainer = build_trainer(args, device_id, model, None)

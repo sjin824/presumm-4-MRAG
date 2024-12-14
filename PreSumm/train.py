@@ -137,7 +137,10 @@ def main(configs=False, sample=None, target=None):
     init_logger(args.log_file)
     device = "cpu" if args.visible_gpus == '-1' else "cuda"
     device_id = 0 if device == "cuda" else -1
-
+    
+    cand_sent_ids = sample['ids']
+    cand_sents = sample['sentences']
+    
     if (args.task == 'abs'):
         if (args.mode == 'train'):
             train_abs(args, device_id)
@@ -173,7 +176,7 @@ def main(configs=False, sample=None, target=None):
                 step = int(cp.split('.')[-2].split('_')[-1])
             except:
                 step = 0
-            test_ext(args, device_id, cp, step)
+            test_ext(args, cand_sent_ids, cand_sents, device_id, cp, step)
             
         # This branch is modified by Siyu, different from orginal 'PreSumm/src/models/train.py'.
         # In 'PreSumm/src/models/train.py', there is no such 'test_text_ext()' function (This function was added in Zhenyun's implementation).
@@ -181,7 +184,7 @@ def main(configs=False, sample=None, target=None):
         # We could just invoke'test_ext()' here.
         elif (args.mode == 'test_text'): 
             # 保留了和zhenyun一样的return
-            return test_ext(args=args, text=sample, target=target, device_id=device_id, step=-1) 
+            return test_ext(args, cand_sent_ids, cand_sents, target=target, device_id=device_id, step=-1) 
         
 if __name__ == '__main__':
     main()

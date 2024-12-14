@@ -1,0 +1,78 @@
+[2024-12-14 11:40:43,155 INFO] 127.0.0.1 - - [14/Dec/2024 11:40:43] "[35m[1mPOST /presumm HTTP/1.1[0m" 500 -
+[2024-12-14 11:42:05,634 INFO]  * Detected change in '/data/home/sjin824/pyprojects/temp_test/presumm-4-MRAG/PreSumm/train.py', reloading
+[2024-12-14 11:42:37,943 INFO] Loading checkpoint from bertext_cnndm_transformer.pt
+[2024-12-14 11:42:37,944 INFO] 127.0.0.1 - - [14/Dec/2024 11:42:37] "[35m[1mPOST /presumm HTTP/1.1[0m" 500 -
+[2024-12-14 11:45:11,379 INFO]  * Detected change in '/data/home/sjin824/pyprojects/temp_test/presumm-4-MRAG/presumm_api.py', reloading
+[2024-12-14 11:45:19,302 INFO] Loading checkpoint from checkpoints/bertext_cnndm_transformer.pt
+[2024-12-14 11:45:20,564 INFO] https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-config.json not found in cache or force_download set to True, downloading to /tmp/tmptgap490j
+[2024-12-14 11:45:21,188 INFO] copying /tmp/tmptgap490j to cache at ../temp/4dad0251492946e18ac39290fcfe91b89d370fee250efe9521476438fe8ca185.7156163d5fdc189c3016baca0775ffce230789d7fa2a42ef516483e4ca884517
+[2024-12-14 11:45:21,188 INFO] creating metadata file for ../temp/4dad0251492946e18ac39290fcfe91b89d370fee250efe9521476438fe8ca185.7156163d5fdc189c3016baca0775ffce230789d7fa2a42ef516483e4ca884517
+[2024-12-14 11:45:21,189 INFO] removing temp file /tmp/tmptgap490j
+[2024-12-14 11:45:21,189 INFO] loading configuration file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-config.json from cache at ../temp/4dad0251492946e18ac39290fcfe91b89d370fee250efe9521476438fe8ca185.7156163d5fdc189c3016baca0775ffce230789d7fa2a42ef516483e4ca884517
+[2024-12-14 11:45:21,189 INFO] Model config {
+  "architectures": [
+    "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "finetuning_task": null,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "num_labels": 2,
+  "output_attentions": false,
+  "output_hidden_states": false,
+  "pad_token_id": 0,
+  "pruned_heads": {},
+  "torchscript": false,
+  "type_vocab_size": 2,
+  "vocab_size": 30522
+}
+
+[2024-12-14 11:45:21,821 INFO] https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-pytorch_model.bin not found in cache or force_download set to True, downloading to /tmp/tmp6lqyc9_8
+[2024-12-14 11:45:54,501 INFO] copying /tmp/tmp6lqyc9_8 to cache at ../temp/aa1ef1aede4482d0dbcd4d52baad8ae300e60902e88fcb0bebdec09afd232066.36ca03ab34a1a5d5fa7bc3d03d55c4fa650fed07220e2eeebc06ce58d0e9a157
+[2024-12-14 11:45:54,930 INFO] creating metadata file for ../temp/aa1ef1aede4482d0dbcd4d52baad8ae300e60902e88fcb0bebdec09afd232066.36ca03ab34a1a5d5fa7bc3d03d55c4fa650fed07220e2eeebc06ce58d0e9a157
+[2024-12-14 11:45:54,931 INFO] removing temp file /tmp/tmp6lqyc9_8
+[2024-12-14 11:45:55,046 INFO] loading weights file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-pytorch_model.bin from cache at ../temp/aa1ef1aede4482d0dbcd4d52baad8ae300e60902e88fcb0bebdec09afd232066.36ca03ab34a1a5d5fa7bc3d03d55c4fa650fed07220e2eeebc06ce58d0e9a157
+[2024-12-14 11:46:01,882 INFO] * number of parameters: 120512513
+[2024-12-14 11:46:02,517 INFO] loading vocabulary file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt from cache at /home/sjin824/.cache/torch/pytorch_transformers/26bc1ad6c0ac742e9b52263248f6d0f00068293b33709fae12320c0e35ccfbbb.542ce4285a40d23a559526243235df47c5f75c197f04f37d1a0c124c32c9a084
+[2024-12-14 11:46:03,139 INFO] 127.0.0.1 - - [14/Dec/2024 11:46:03] "[35m[1mPOST /presumm HTTP/1.1[0m" 500 -
+[2024-12-14 11:51:34,026 INFO]  * Detected change in '/data/home/sjin824/pyprojects/temp_test/presumm-4-MRAG/PreSumm/models/data_loader.py', reloading
+[2024-12-14 11:52:04,688 INFO] Loading checkpoint from checkpoints/bertext_cnndm_transformer.pt
+[2024-12-14 11:52:06,045 INFO] loading configuration file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-config.json from cache at ../temp/4dad0251492946e18ac39290fcfe91b89d370fee250efe9521476438fe8ca185.7156163d5fdc189c3016baca0775ffce230789d7fa2a42ef516483e4ca884517
+[2024-12-14 11:52:06,046 INFO] Model config {
+  "architectures": [
+    "BertForMaskedLM"
+  ],
+  "attention_probs_dropout_prob": 0.1,
+  "finetuning_task": null,
+  "hidden_act": "gelu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-12,
+  "max_position_embeddings": 512,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "num_labels": 2,
+  "output_attentions": false,
+  "output_hidden_states": false,
+  "pad_token_id": 0,
+  "pruned_heads": {},
+  "torchscript": false,
+  "type_vocab_size": 2,
+  "vocab_size": 30522
+}
+
+[2024-12-14 11:52:06,706 INFO] loading weights file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-pytorch_model.bin from cache at ../temp/aa1ef1aede4482d0dbcd4d52baad8ae300e60902e88fcb0bebdec09afd232066.36ca03ab34a1a5d5fa7bc3d03d55c4fa650fed07220e2eeebc06ce58d0e9a157
+[2024-12-14 11:52:13,680 INFO] * number of parameters: 120512513
+[2024-12-14 11:52:14,706 INFO] loading vocabulary file https://s3.amazonaws.com/models.huggingface.co/bert/bert-base-uncased-vocab.txt from cache at /home/sjin824/.cache/torch/pytorch_transformers/26bc1ad6c0ac742e9b52263248f6d0f00068293b33709fae12320c0e35ccfbbb.542ce4285a40d23a559526243235df47c5f75c197f04f37d1a0c124c32c9a084
+[2024-12-14 11:52:15,269 INFO] 127.0.0.1 - - [14/Dec/2024 11:52:15] "[35m[1mPOST /presumm HTTP/1.1[0m" 500 -

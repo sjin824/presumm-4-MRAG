@@ -5,7 +5,7 @@ import sys
 import time
 from datetime import datetime
 
-from presumm.others.logging import logger
+from PreSumm.others.logging import logger
 
 
 def build_report_manager(opt):
